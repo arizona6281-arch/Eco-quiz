@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🌍 고난도 생태·환경 퀴즈</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap');
+    body {
+      margin: 0;
+      height: 100vh;
+      font-family: 'Nunito', sans-serif;
+      background: linear-gradient(135deg, #1e3c72, #2a5298, #8e44ad, #ff6ec7);
+      background-size: 400% 400%;
+      animation: bgShift 12s ease infinite;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    @keyframes bgShift {
+      0% {background-position: 0% 50%;}
+      50% {background-position: 100% 50%;}
+      100% {background-position: 0% 50%;}
+    }
+
+    .container {
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(12px);
+      border-radius: 25px;
+      box-shadow: 0 0 40px rgba(255,255,255,0.3);
+      padding: 40px;
+      width: 90%;
+      max-width: 650px;
+      animation: fadeIn 1.2s ease;
+    }
+
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(40px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+
+    h1 {
+      font-size: 2.3em;
+      margin-bottom: 15px;
+      background: linear-gradient(to right, #ffedbc, #ed4264);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .subtitle {
+      font-size: 1.1em;
+      opacity: 0.9;
+      margin-bottom: 30px;
+    }
+
+    button {
+      display: inline-block;
+      margin-top: 15px;
+      padding: 12px 25px;
+      background: rgba(255,255,255,0.25);
+      border: none;
+      border-radius: 20px;
+      color: #fff;
+      font-size: 1.05em;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    button:hover {
+      background: rgba(255,255,255,0.45);
+      transform: scale(1.05);
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    /* 퀴즈 화면 */
+    .question {
+      font-size: 1.3em;
+      margin: 25px 0;
+    }
+
+    .options button {
+      display: block;
+      width: 100%;
+      margin: 10px 0;
+      padding: 12px;
+      background: rgba(255,255,255,0.25);
+      border-radius: 15px;
+      font-size: 1em;
+      color: white;
+      transition: all 0.3s ease;
+    }
+
+    .options button:hover {
+      background: rgba(255,255,255,0.5);
+      transform: scale(1.05);
+    }
+
+    #result {
+      font-size: 1.3em;
+      margin-top: 20px;
+      animation: fadeIn 1s ease;
+    }
+
+    /* 부드러운 별 애니메이션 배경 */
+    .stars {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      z-index: -1;
+    }
+    .star {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: white;
+      opacity: 0.8;
+      animation: twinkle 3s infinite ease-in-out;
+    }
+    @keyframes twinkle {
+      0%, 100% {opacity: 0.3;}
+      50% {opacity: 1;}
+    }
+  </style>
+</head>
+<body>
+  <div class="stars"></div>
+
+  <!-- 시작 화면 -->
+  <div class="container" id="start-screen">
+    <h1>🌿 생태·환경 퀴즈</h1>
+    <p class="subtitle">자연의 원리를 이해하고, 환경의 숨결을 느껴보세요.</p>
+    <button id="start-btn">시작하기</button>
+  </div>
+
+  <!-- 퀴즈 화면 -->
+  <div class="container hidden" id="quiz-screen">
+    <h1>🌎 퀴즈 도전!</h1>
+    <div class="question" id="question"></div>
+    <div class="options" id="options"></div>
+  </div>
+
+  <!-- 결과 화면 -->
+  <div class="container hidden" id="result-screen">
+    <h1>결과</h1>
+    <div id="result"></div>
+    <button id="restart-btn">다시 도전하기</button>
+  </div>
+
+  <script>
+    // 별 생성
+    const starsContainer = document.querySelector('.stars');
+    for (let i = 0; i < 80; i++) {
+      const star = document.createElement('div');
+      star.classList.add('star');
+      star.style.top = Math.random() * 100 + '%';
+      star.style.left = Math.random() * 100 + '%';
+      star.style.animationDelay = Math.random() * 3 + 's';
+      starsContainer.appendChild(star);
+    }
+
+    const quizData = [
+      { q: "1. 온실가스 중 ‘단위 질량당 지구온난화지수(GWP)’가 가장 높은 것은?", o: ["이산화탄소(CO₂)", "메탄(CH₄)", "아산화질소(N₂O)", "육불화황(SF₆)"], a: 3 },
+      { q: "2. 생태계에서 질소고정작용을 수행하는 주요 생물은?", o: ["곰팡이", "질소고정세균", "조류", "원생동물"], a: 1 },
+      { q: "3. 수중 부영양화 현상의 주요 원인 물질은?", o: ["염소와 나트륨", "질산염과 인산염", "암모니아와 산소", "이산화탄소와 수소"], a: 1 },
+      { q: "4. ‘생태적 지위(Ecological niche)’란 무엇인가?", o: ["서식지 내의 먹이망 구조", "한 종이 환경에서 차지하는 역할과 위치", "생물의 개체군 크기", "군집 내의 종 다양성"], a: 1 },
+      { q: "5. 해양 산성화의 주요 원인은?", o: ["해수 온도 상승", "대기 중 이산화탄소의 흡수", "염분 농도 변화", "플랑크톤 번식"], a: 1 },
+      { q: "6. ‘1차 소비자’는 다음 중 어떤 생물을 말하는가?", o: ["식물", "초식동물", "육식동물", "분해자"], a: 1 },
+      { q: "7. 기후변화로 인해 해수면이 상승하는 주된 두 가지 요인은?", o: ["빙하 융해와 해수의 열팽창", "산성화와 산소 감소", "지진 증가와 용암 확산", "해류 변화와 대기압 저하"], a: 0 },
+      { q: "8. 열대우림이 ‘지구의 허파’라고 불리는 이유는?", o: ["이산화탄소 대부분을 생산하기 때문", "광합성으로 산소를 다량 공급하기 때문", "동물 다양성이 가장 높기 때문", "기온 조절 능력이 뛰어나기 때문"], a: 1 },
+      { q: "9. ‘생물 다양성 핫스팟(Biodiversity hotspot)’의 조건으로 옳은 것은?", o: ["면적이 넓고 인간 영향이 적은 지역", "고유종이 많고 서식지가 급격히 감소한 지역", "온대 기후의 안정된 지역", "산업화가 활발한 지역"], a: 1 },
+      { q: "10. ‘IPCC 제6차 보고서(AR6)’에서 제시한 지구 온도 상승 억제 목표는?", o: ["2100년까지 3℃ 이하", "2050년까지 2℃ 이하", "2100년까지 1.5℃ 이하", "2070년까지 0.5℃ 이하"], a: 2 },
+    ];
+    
+
+    let current = 0;
+    let score = 0;
+
+    const startScreen = document.getElementById('start-screen');
+    const quizScreen = document.getElementById('quiz-screen');
+    const resultScreen = document.getElementById('result-screen');
+    const questionEl = document.getElementById('question');
+    const optionsEl = document.getElementById('options');
+    const resultEl = document.getElementById('result');
+
+    document.getElementById('start-btn').onclick = () => {
+      startScreen.classList.add('hidden');
+      quizScreen.classList.remove('hidden');
+      loadQuestion();
+    };
+
+    function loadQuestion() {
+      const q = quizData[current];
+      questionEl.textContent = q.q;
+      optionsEl.innerHTML = "";
+      q.o.forEach((opt, i) => {
+        const btn = document.createElement("button");
+        btn.textContent = opt;
+        btn.onclick = () => checkAnswer(i);
+        optionsEl.appendChild(btn);
+      });
+    }
+
+    function checkAnswer(i) {
+      if (i === quizData[current].a) score++;
+      current++;
+      if (current < quizData.length) loadQuestion();
+      else showResult();
+    }
+
+    function showResult() {
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+      let msg = "";
+      if (score <= 3) msg = "🌱 아직 어렵죠! 하지만 시작이 반이에요.";
+      else if (score <= 7) msg = "🌿 훌륭해요! 환경 이해력이 깊어요.";
+      else msg = "🌎 놀라워요! 진정한 환경 전문가네요.";
+      resultEl.innerHTML = `✅ 점수: ${score} / ${quizData.length}<br>${msg}`;
+    }
+
+    document.getElementById('restart-btn').onclick = () => {
+      resultScreen.classList.add('hidden');
+      startScreen.classList.remove('hidden');
+      current = 0;
+      score = 0;
+    };
+  </script>
+</body>
+    </html>
